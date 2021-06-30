@@ -28,6 +28,6 @@ public class AccountController {
         this.userDao = userDao;
     }
 
-    @RequestMapping(path = "", method = RequestMethod.GET) //map to balance
-    public Integer getBalance(Principal user) {return accountsDao.getBalance(user.getName());}
+    @RequestMapping(path = "/balance", method = RequestMethod.GET) //map to balance
+    public BigDecimal getBalance(Principal user) {return accountsDao.getBalance(user.getName());}
 }
