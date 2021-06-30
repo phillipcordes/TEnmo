@@ -2,9 +2,14 @@ package com.techelevator.tenmo;
 
 import com.techelevator.tenmo.model.AuthenticatedUser;
 import com.techelevator.tenmo.model.UserCredentials;
+import com.techelevator.tenmo.services.AccountService;
 import com.techelevator.tenmo.services.AuthenticationService;
 import com.techelevator.tenmo.services.AuthenticationServiceException;
+import com.techelevator.tenmo.services.TransferService;
 import com.techelevator.view.ConsoleService;
+
+import java.lang.reflect.AccessibleObject;
+import java.math.BigDecimal;
 
 public class App {
 
@@ -25,6 +30,8 @@ private static final String API_BASE_URL = "http://localhost:8080/";
     private AuthenticatedUser currentUser;
     private ConsoleService console;
     private AuthenticationService authenticationService;
+    AccountService accountService = new AccountService(API_BASE_URL);
+    TransferService transferService = new TransferService(API_BASE_URL);
 
     public static void main(String[] args) {
     	App app = new App(new ConsoleService(System.in, System.out), new AuthenticationService(API_BASE_URL));
@@ -69,26 +76,66 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 
 	private void viewCurrentBalance() {
 		// TODO Auto-generated method stub
+		String token = currentUser.getToken();  //give this to the server
+		BigDecimal balance = accountService.viewCurrentBalance(token);
+		System.out.println("****************************************");
+		System.out.println("Your current balance is: " + balance);
+		System.out.println("****************************************");
 	}
 
 	private void viewTransferHistory() {
 		// TODO Auto-generated method stub
-		
+		//Request to view transaction history
+		System.out.println("*********************************************************************************");
+		System.out.println("Please enter the transfer ID of the transaction you wish to view details of: " );
+		System.out.println("*********************************************************************************");
+		//show log of completed transactions
 	}
 
 	private void viewPendingRequests() {
 		// TODO Auto-generated method stub
-		
+		//Request to view pending requests
+		System.out.println("*********************************************************************************");
+		System.out.println("Please enter the transfer ID of the transaction you wish to view details of: " );
+		System.out.println("*********************************************************************************");
+		//show log of pending requests
+
+
 	}
 
 	private void sendBucks() {
 		// TODO Auto-generated method stub
-		
+		//call method and loop through user list and present list of all users
+		System.out.println("*************************************************************************");
+		transferService.listUsers();
+		System.out.println("");
+		System.out.println("*************************************************************************");
+		System.out.println("Please enter the userID of the person you wish to send TE Bucks to: " ); //enter in userId
+		System.out.println("*************************************************************************");
+		//enter in how many TE Bucks to send
+		System.out.println("*************************************************************************");
+		System.out.println("Please enter the amount of TE Bucks you wish to send: " );
+		System.out.println("*************************************************************************");
+		//process of decreasing sender's account by specified TE Bucks amount and increasing receiver's account by that amount
 	}
 
 	private void requestBucks() {
 		// TODO Auto-generated method stub
-		
+		//call method and loop through user list//call method and loop through user list and present list of all users
+		System.out.println("*************************************************************************");
+		transferService.listUsers();
+		System.out.println("*************************************************************************");
+		System.out.println("Please enter the userID of the person you wish to request TE bucks from: ");
+		System.out.println("*************************************************************************");
+		//enter in userId
+
+		//enter in how many TE Bucks to request
+		System.out.println("*************************************************************************");
+		System.out.println("Please enter the amount of TE Bucks you wish to request: " );
+		System.out.println("*************************************************************************");
+		//process of increasing sender's account by specified TE Bucks amount and decreasing receiver's account by that amount...
+		//Or do we put this in as a pending request?
+
 	}
 	
 	private void exitProgram() {
@@ -150,4 +197,9 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 		String password = console.getUserInput("Password");
 		return new UserCredentials(username, password);
 	}
+
+
+
+
+
 }

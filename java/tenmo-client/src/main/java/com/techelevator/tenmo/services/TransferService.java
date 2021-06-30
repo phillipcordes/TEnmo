@@ -1,34 +1,36 @@
 package com.techelevator.tenmo.services;
 
+import com.techelevator.tenmo.model.User;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.web.client.RestClientResponseException;
 import org.springframework.web.client.RestTemplate;
 
-import java.math.BigDecimal;
-import java.security.Principal;
-
-public class AccountService {
+public class TransferService {
     private final String API_BASE_URL;
     private RestTemplate restTemplate = new RestTemplate();
 
+//private AuthenticatedUser currentUser;
 
-
-    public AccountService(String apiURL) {
+    public TransferService(String apiURL) {
         API_BASE_URL = apiURL;
-    }
+    } //(String apiURL, AuthenticatedUser currentUsr) this.currentUser = currentUser;
 
-    public BigDecimal viewCurrentBalance(String token) {
-        BigDecimal balance = null;
-        try{
-            balance = restTemplate.exchange(API_BASE_URL + "accounts/balance", HttpMethod.GET, makeAuthEntity(token),BigDecimal.class).getBody();
-        }
-        catch (RestClientResponseException ex) {
+
+    //return list of users
+    public void listUsers()  {
+        User[] users;
+        try {
+            users = restTemplate.getForObject(API_BASE_URL + "users", User[].class);
+            for(User user: users){
+                System.out.println("Username: " + user.getUsername() + " - UserId: " + user.getId());
+            }
+        } catch (RestClientResponseException ex) {
             System.out.println("Error"); //new AuthenticationServiceException(ex.getRawStatusCode() + " : " + ex.getResponseBodyAsString());
         }
-        return balance;
     }
+
 
     private HttpEntity makeAuthEntity(String token) {
         HttpHeaders headers = new HttpHeaders();
@@ -36,5 +38,4 @@ public class AccountService {
         HttpEntity entity = new HttpEntity<>(headers);
         return entity;
     }
-
 }
