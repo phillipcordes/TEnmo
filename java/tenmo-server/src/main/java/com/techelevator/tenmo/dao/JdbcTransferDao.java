@@ -1,9 +1,12 @@
 package com.techelevator.tenmo.dao;
 
+import com.techelevator.tenmo.model.Account;
 import com.techelevator.tenmo.model.Transfer;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
+
+import java.math.BigDecimal;
 
 @Component
 public class JdbcTransferDao implements TransferDao {
@@ -32,10 +35,10 @@ public class JdbcTransferDao implements TransferDao {
 
     public int findAccountIdByUserId(int userId) {
         String sql = "SELECT account_id FROM accounts WHERE user_id = ?;";
-        return jdbcTemplate.queryForObject(sql,Integer.class,userId);
+        return jdbcTemplate.queryForObject(sql, Integer.class, userId);
     }
 
-    public Transfer createTransfer(Transfer newTransfer, int id,int account_Id_to) {
+    public Transfer createTransfer(Transfer newTransfer, int id, int account_Id_to) {
         String sql = "INSERT INTO transfers (transfer_type_id, transfer_status_id, account_from, account_to, amount) " +
                 "VALUES (2, 2,?,?,?) " +
                 "RETURNING transfer_id;";
@@ -50,6 +53,18 @@ public class JdbcTransferDao implements TransferDao {
     //Get Pending Request
     //Update Transfer Request
 
+    public void updateBalanceWhenUserSendsMoney(int accountTo, int accountFrom, BigDecimal amount) throws Exception {
+        String sqlAmountCheck = "SELECT balance FROM accounts WHERE account_id = ?; ";
+        BigDecimal currentBalance = jdbcTemplate.queryForObject(sqlAmountCheck, BigDecimal.class, accountFrom);
+        if (currentBalance.compareTo(amount) == -1) {
+            throw new Exception();
+        } else {
+            String sql = "UPDATE accounts SET balance = balance + ? WHERE account_id = ?; " +
+                    "UPDATE accounts SET balance = balance - ? WHERE account_id = ?; ";
+            jdbcTemplate.update(sql, amount, accountTo, amount, accountFrom);
+        }
+    }
+
     private Transfer mapRowToTransfer(SqlRowSet rowSet) {
         Transfer transfer = new Transfer();
         transfer.setTransfer_id(rowSet.getInt("transfer_id"));
@@ -63,27 +78,3 @@ public class JdbcTransferDao implements TransferDao {
 //add try/catch block to mapRow when transferring amounts?
 }
 
-
-
-
-/*
-    //add to balance
-    public BigDecimal addToBalance(BigDecimal amountToAdd, int id){
-        Account account = findAccountById(id);
-        BigDecimal newBalance = account.getBalance().add(amountToAdd);
-        System.out.println(newBalance);
-        String sqlString = "UPDATE accounts SET balance = ? WHERE user_id = ?;";
-        return account.getBalance();
-    }
-
-    //subtract to balance
-    public BigDecimal subtractFromBalance(BigDecimal amountToSubtract, int id){
-        Account account = findAccountById(id);
-        BigDecimal newBalance = account.getBalance().subtract(amountToSubtract);
-        String sql = "UPDATE accounts SET balance = ? WHERE user_id = ?;";
-        return account.getBalance();
-    }
-
-
-
- */

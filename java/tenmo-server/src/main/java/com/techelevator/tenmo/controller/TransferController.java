@@ -22,7 +22,7 @@ public class TransferController {
     private AccountsDao accountsDao;
     private UserDao userDao;
 
-    public TransferController(UserDao userDao, AccountsDao accountsDao, TransferDao transferDao){
+    public TransferController(UserDao userDao, AccountsDao accountsDao, TransferDao transferDao) {
         this.accountsDao = accountsDao;
         this.transferDao = transferDao;
         this.userDao = userDao;
@@ -35,7 +35,12 @@ public class TransferController {
         int loggedInUserId = userDao.findIdByUsername(loggedInUserName);
         int accountId = transferDao.findAccountIdByUserId(loggedInUserId);
         int accountIdTo = transferDao.findAccountIdByUserId(transfer.getUser_Id());
-        return transferDao.createTransfer(transfer, accountId,accountIdTo);
+        try {
+            transferDao.updateBalanceWhenUserSendsMoney(accountIdTo, accountId, transfer.getAmount());
+        } catch (Exception e) {
+            System.out.println("Insufficent Funds");
+        }
+        return transferDao.createTransfer(transfer, accountId, accountIdTo);
     }
 /*
     //request transfer request with POST

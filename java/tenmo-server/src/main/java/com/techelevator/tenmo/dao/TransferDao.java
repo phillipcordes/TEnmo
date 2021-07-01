@@ -2,6 +2,8 @@ package com.techelevator.tenmo.dao;
 
 import com.techelevator.tenmo.model.Transfer;
 
+import java.math.BigDecimal;
+
 public interface TransferDao {
 
     Transfer createTransfer(Transfer newTransfer, int id, int account_Id_To);
@@ -10,6 +12,7 @@ public interface TransferDao {
 
     int findAccountIdByUserId(int userId);
 
+    void updateBalanceWhenUserSendsMoney(int accountTo, int accountFrom, BigDecimal amount) throws Exception;
 }
 
 /*
