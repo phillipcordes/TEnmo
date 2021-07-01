@@ -10,6 +10,7 @@ public class Transfer {
     private int account_to;
     private int account_from;
     private BigDecimal amount;
+
     /*private String transferType; //have these ready for transfer process
     private String transferStatus;
 */

@@ -4,7 +4,7 @@ import com.techelevator.tenmo.model.Transfer;
 
 public interface TransferDao {
 
-    Transfer createTransfer(Transfer newTransfer);
+    Transfer createTransfer(Transfer newTransfer, int id);
 
     Transfer getTransferByTransferId(int transferId);
 

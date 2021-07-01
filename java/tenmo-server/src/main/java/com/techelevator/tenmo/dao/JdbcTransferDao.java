@@ -30,12 +30,12 @@ public class JdbcTransferDao implements TransferDao {
 
     }
 
-    public Transfer createTransfer(Transfer newTransfer) {
+    public Transfer createTransfer(Transfer newTransfer, int id) {
         String sql = "INSERT INTO transfers (transfer_type_id, transfer_status_id, account_from, account_to, amount " +
                 "VALUES (2, 2,?,?,?) " +
                 "RETURNING transfer_id;";
         int newId = jdbcTemplate.queryForObject(sql, Integer.class, newTransfer.getTransfer_type_id(),
-                newTransfer.getTransfer_status_id(), newTransfer.getAccount_from(), newTransfer.getAccount_to(),
+                newTransfer.getTransfer_status_id(), id, newTransfer.getAccount_to(),
                 newTransfer.getAmount());
         return getTransferByTransferId(newId);
     }
@@ -58,3 +58,28 @@ public class JdbcTransferDao implements TransferDao {
     }
 //add try/catch block to mapRow when transferring amounts?
 }
+
+
+
+
+/*
+    //add to balance
+    public BigDecimal addToBalance(BigDecimal amountToAdd, int id){
+        Account account = findAccountById(id);
+        BigDecimal newBalance = account.getBalance().add(amountToAdd);
+        System.out.println(newBalance);
+        String sqlString = "UPDATE accounts SET balance = ? WHERE user_id = ?;";
+        return account.getBalance();
+    }
+
+    //subtract to balance
+    public BigDecimal subtractFromBalance(BigDecimal amountToSubtract, int id){
+        Account account = findAccountById(id);
+        BigDecimal newBalance = account.getBalance().subtract(amountToSubtract);
+        String sql = "UPDATE accounts SET balance = ? WHERE user_id = ?;";
+        return account.getBalance();
+    }
+
+
+
+ */

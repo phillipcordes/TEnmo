@@ -17,7 +17,6 @@ import java.util.List;
 public class JdbcAccountsDao implements AccountsDao {
     private JdbcTemplate jdbcTemplate;
 
-    //public JbdcAccountDao() {}
 
     public JdbcAccountsDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
