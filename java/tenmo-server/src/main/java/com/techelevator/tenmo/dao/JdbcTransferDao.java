@@ -19,8 +19,8 @@ public class JdbcTransferDao implements TransferDao {
 
         Transfer transfer = null;
 
-        String sql = "SELECT transfer_id, transfer_type_id, transfer_status_id, account_from, account_to, amount" +
-                "FROM transfers" +
+        String sql = "SELECT transfer_id, transfer_type_id, transfer_status_id, account_from, account_to, amount " +
+                "FROM transfers " +
                 "WHERE transfer_id = ?;";
         SqlRowSet results = jdbcTemplate.queryForRowSet(sql, transferId);
         if (results.next()) {
@@ -30,12 +30,16 @@ public class JdbcTransferDao implements TransferDao {
 
     }
 
-    public Transfer createTransfer(Transfer newTransfer, int id) {
-        String sql = "INSERT INTO transfers (transfer_type_id, transfer_status_id, account_from, account_to, amount " +
+    public int findAccountIdByUserId(int userId) {
+        String sql = "SELECT account_id FROM accounts WHERE user_id = ?;";
+        return jdbcTemplate.queryForObject(sql,Integer.class,userId);
+    }
+
+    public Transfer createTransfer(Transfer newTransfer, int id,int account_Id_to) {
+        String sql = "INSERT INTO transfers (transfer_type_id, transfer_status_id, account_from, account_to, amount) " +
                 "VALUES (2, 2,?,?,?) " +
                 "RETURNING transfer_id;";
-        int newId = jdbcTemplate.queryForObject(sql, Integer.class, newTransfer.getTransfer_type_id(),
-                newTransfer.getTransfer_status_id(), id, newTransfer.getAccount_to(),
+        int newId = jdbcTemplate.queryForObject(sql, Integer.class, id, account_Id_to,
                 newTransfer.getAmount());
         return getTransferByTransferId(newId);
     }
@@ -48,8 +52,8 @@ public class JdbcTransferDao implements TransferDao {
 
     private Transfer mapRowToTransfer(SqlRowSet rowSet) {
         Transfer transfer = new Transfer();
-        transfer.setTransfer_id(rowSet.getInt("tranfer_id"));
-        transfer.setTransfer_type_id(rowSet.getInt("tranfer_type_id"));
+        transfer.setTransfer_id(rowSet.getInt("transfer_id"));
+        transfer.setTransfer_type_id(rowSet.getInt("transfer_type_id"));
         transfer.setTransfer_status_id(rowSet.getInt("transfer_status_id"));
         transfer.setAccount_to(rowSet.getInt("account_to"));
         transfer.setAccount_from(rowSet.getInt("account_from"));

@@ -11,6 +11,16 @@ public class Transfer {
     private int account_from;
     private BigDecimal amount;
 
+    public int getUser_Id() {
+        return user_Id;
+    }
+
+    public void setUser_Id(int user_Id) {
+        this.user_Id = user_Id;
+    }
+
+    private int user_Id;
+
     /*private String transferType; //have these ready for transfer process
     private String transferStatus;
 */
@@ -22,6 +32,13 @@ public class Transfer {
         this.transfer_status_id = transfer_status_id;
         this.account_to = account_to;
         this.account_from = account_from;
+        this.amount = amount;
+    }
+
+    public Transfer(int transfer_type_id,int transfer_status_id,int account_to,BigDecimal amount){
+        this.transfer_type_id = transfer_type_id;
+        this.transfer_status_id =transfer_status_id;
+        this.account_to = account_to;
         this.amount = amount;
     }
 
