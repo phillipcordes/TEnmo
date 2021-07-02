@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.security.PermitAll;
 import java.security.Principal;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -29,18 +30,24 @@ public class TransferController {
     }
 
     //send transfer request
-    @RequestMapping(path = "/accounts/transfer", method = RequestMethod.POST)
-    public Transfer sendTransfer(@RequestBody Transfer transfer, Principal principal) {
+    @RequestMapping(path = "/accounts/transfer/sendmoney", method = RequestMethod.POST)
+    public Transfer sendTransfer(@RequestBody Transfer transfer, Principal principal) throws Exception {
         String loggedInUserName = principal.getName();
         int loggedInUserId = userDao.findIdByUsername(loggedInUserName);
         int accountId = transferDao.findAccountIdByUserId(loggedInUserId);
         int accountIdTo = transferDao.findAccountIdByUserId(transfer.getUser_Id());
-        try {
-            transferDao.updateBalanceWhenUserSendsMoney(accountIdTo, accountId, transfer.getAmount());
-        } catch (Exception e) {
-            System.out.println("Insufficent Funds");
-        }
+        transferDao.updateBalanceWhenUserSendsMoney(accountIdTo, accountId, transfer.getAmount());
         return transferDao.createTransfer(transfer, accountId, accountIdTo);
+    }
+
+    @RequestMapping(path = "/accounts/listtransfers", method = RequestMethod.GET)
+    public List<Transfer> listTransfers(Principal principal){
+        String loggedInUserName = principal.getName();
+        int loggedInUserId = userDao.findIdByUsername(loggedInUserName);
+        int accountId = transferDao.findAccountIdByUserId(loggedInUserId);
+        List<Transfer> transfers = transferDao.getTransfers(accountId);
+        return transfers;
+
     }
 /*
     //request transfer request with POST

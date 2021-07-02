@@ -7,6 +7,8 @@ import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
 @Component
 public class JdbcTransferDao implements TransferDao {
@@ -53,7 +55,7 @@ public class JdbcTransferDao implements TransferDao {
     //Get Pending Request
     //Update Transfer Request
 
-    public void updateBalanceWhenUserSendsMoney(int accountTo, int accountFrom, BigDecimal amount) throws Exception {
+    public BigDecimal updateBalanceWhenUserSendsMoney(int accountTo, int accountFrom, BigDecimal amount) throws Exception {
         String sqlAmountCheck = "SELECT balance FROM accounts WHERE account_id = ?; ";
         BigDecimal currentBalance = jdbcTemplate.queryForObject(sqlAmountCheck, BigDecimal.class, accountFrom);
         if (currentBalance.compareTo(amount) == -1) {
@@ -62,7 +64,21 @@ public class JdbcTransferDao implements TransferDao {
             String sql = "UPDATE accounts SET balance = balance + ? WHERE account_id = ?; " +
                     "UPDATE accounts SET balance = balance - ? WHERE account_id = ?; ";
             jdbcTemplate.update(sql, amount, accountTo, amount, accountFrom);
+            return jdbcTemplate.queryForObject(sqlAmountCheck, BigDecimal.class, accountFrom);
         }
+    }
+
+    public List<Transfer> getTransfers(int accountId) {
+        List<Transfer> transfers = new ArrayList<>();
+        String sql = "SELECT transfer_id,transfer_type_id,transfer_status_id,account_from,account_to,amount " +
+                "FROM transfers t " +
+                "JOIN accounts a ON a.account_id = t.account_from " +
+                "WHERE a.account_id = ?;";
+        SqlRowSet results = jdbcTemplate.queryForRowSet(sql, accountId);
+        while (results.next()) {
+            transfers.add(mapRowToTransfer(results));
+        }
+        return transfers;
     }
 
     private Transfer mapRowToTransfer(SqlRowSet rowSet) {

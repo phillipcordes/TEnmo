@@ -106,17 +106,16 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 	private void sendBucks() {
 		// TODO Auto-generated method stub
 		//call method and loop through user list and present list of all users
+		String token = currentUser.getToken();
 		System.out.println("*************************************************************************");
 		transferService.listUsers();
-		System.out.println("");
-		System.out.println("*************************************************************************");
-		System.out.println("Please enter the userID of the person you wish to send TE Bucks to: " ); //enter in userId
-		System.out.println("*************************************************************************");
-		//enter in how many TE Bucks to send
-		System.out.println("*************************************************************************");
-		System.out.println("Please enter the amount of TE Bucks you wish to send: " );
-		System.out.println("*************************************************************************");
-		//process of decreasing sender's account by specified TE Bucks amount and increasing receiver's account by that amount
+		try{
+		transferService.sendMoney(token);
+		BigDecimal balance = accountService.viewCurrentBalance(token);
+		System.out.println("Success! Your updated balance is: "+ balance);}
+		catch (Exception e){
+			System.out.println("Invalid user or amount. Please try again.");
+		}
 	}
 
 	private void requestBucks() {
