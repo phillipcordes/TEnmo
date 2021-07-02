@@ -59,7 +59,7 @@ public class TransferService {
     public void listTransfers(String token){
         List<Transfer> transferList = new ArrayList<>();
         try{
-            transferList = restTemplate.exchange(API_BASE_URL+"/accounts/listtransfers",HttpMethod.GET,makeAuthEntity(token),).getBody();
+            transferList = restTemplate.exchange(API_BASE_URL+"/accounts/listtransfers",HttpMethod.GET,makeAuthEntity(token), List<Transfer>.class).getBody();
         }
     }
 
