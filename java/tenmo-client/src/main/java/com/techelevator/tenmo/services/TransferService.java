@@ -58,8 +58,10 @@ public class TransferService {
 
     public void listTransfers(String token){
         List<Transfer> transferList = new ArrayList<>();
-        try{
-            transferList = restTemplate.exchange(API_BASE_URL+"/accounts/listtransfers",HttpMethod.GET,makeAuthEntity(token), List<Transfer>.class).getBody();
+        try {
+            transferList = restTemplate.exchange(API_BASE_URL + "/accounts/listtransfers", HttpMethod.GET, makeAuthEntity(token), List.class).getBody();
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
         }
     }
 

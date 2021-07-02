@@ -86,9 +86,9 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 	private void viewTransferHistory() {
 		// TODO Auto-generated method stub
 		//Request to view transaction history
-		System.out.println("*********************************************************************************");
-		System.out.println("Please enter the transfer ID of the transaction you wish to view details of: " );
-		System.out.println("*********************************************************************************");
+		System.out.println("**********************");
+		System.out.println("List of transactions");
+		System.out.println("**********************");
 		//show log of completed transactions
 	}
 
