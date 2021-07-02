@@ -9,13 +9,13 @@ public interface TransferDao {
 
     Transfer createTransfer(Transfer newTransfer, int id, int account_Id_To);
 
-    Transfer getTransferByTransferId(int transferId);
-
     int findAccountIdByUserId(int userId);
 
     BigDecimal updateBalanceWhenUserSendsMoney(int accountTo, int accountFrom, BigDecimal amount) throws Exception;
 
     List<Transfer> getTransfers(int accountId);
+
+    Transfer getTransferByTransferId(int id);
 }
 
 /*

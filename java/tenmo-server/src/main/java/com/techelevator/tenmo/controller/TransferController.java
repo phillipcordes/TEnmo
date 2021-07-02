@@ -30,7 +30,7 @@ public class TransferController {
     }
 
     //send transfer request
-    @RequestMapping(path = "/accounts/transfer/sendmoney", method = RequestMethod.POST)
+    @RequestMapping(path = "/transfers/sendmoney", method = RequestMethod.POST)
     public Transfer sendTransfer(@RequestBody Transfer transfer, Principal principal) throws Exception {
         String loggedInUserName = principal.getName();
         int loggedInUserId = userDao.findIdByUsername(loggedInUserName);
@@ -40,7 +40,12 @@ public class TransferController {
         return transferDao.createTransfer(transfer, accountId, accountIdTo);
     }
 
-    @RequestMapping(path = "/accounts/listtransfers", method = RequestMethod.GET)
+    @RequestMapping(path = "/transfers/{id}", method = RequestMethod.GET)
+    public Transfer getTransferByTransferId(@PathVariable int id){
+        return transferDao.getTransferByTransferId(id);
+    }
+
+    @RequestMapping(path = "/transfers/listtransfers", method = RequestMethod.GET)
     public List<Transfer> listTransfers(Principal principal){
         String loggedInUserName = principal.getName();
         int loggedInUserId = userDao.findIdByUsername(loggedInUserName);

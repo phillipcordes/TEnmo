@@ -19,7 +19,7 @@ public class JdbcTransferDao implements TransferDao {
     public JdbcTransferDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
-
+/*
     public Transfer getTransferByTransferId(int transferId) {
 
         Transfer transfer = null;
@@ -28,12 +28,12 @@ public class JdbcTransferDao implements TransferDao {
                 "FROM transfers " +
                 "WHERE transfer_id = ?;";
         SqlRowSet results = jdbcTemplate.queryForRowSet(sql, transferId);
-        if (results.next()) {
+        while (results.next()) {
             transfer = mapRowToTransfer(results);
         }
         return transfer;
 
-    }
+    }*/
 
     public int findAccountIdByUserId(int userId) {
         String sql = "SELECT account_id FROM accounts WHERE user_id = ?;";
@@ -58,7 +58,8 @@ public class JdbcTransferDao implements TransferDao {
     public BigDecimal updateBalanceWhenUserSendsMoney(int accountTo, int accountFrom, BigDecimal amount) throws Exception {
         String sqlAmountCheck = "SELECT balance FROM accounts WHERE account_id = ?; ";
         BigDecimal currentBalance = jdbcTemplate.queryForObject(sqlAmountCheck, BigDecimal.class, accountFrom);
-        if (currentBalance.compareTo(amount) == -1) {
+        assert currentBalance != null;
+        if (currentBalance.compareTo(amount) < 0) {
             throw new Exception();
         } else {
             String sql = "UPDATE accounts SET balance = balance + ? WHERE account_id = ?; " +
@@ -66,6 +67,39 @@ public class JdbcTransferDao implements TransferDao {
             jdbcTemplate.update(sql, amount, accountTo, amount, accountFrom);
             return jdbcTemplate.queryForObject(sqlAmountCheck, BigDecimal.class, accountFrom);
         }
+    }
+    public Transfer getTransferByTransferId(int id){
+        Transfer transfer = new Transfer();
+        String sql = "SELECT transfer_id,transfer_type_id,transfer_status_id,account_from,account_to,amount " +
+                "FROM transfers " +
+                "WHERE transfer_id = ?;";
+        SqlRowSet results = jdbcTemplate.queryForRowSet(sql,id);
+        if(results.next()){
+            transfer = mapRowToTransfer(results);
+        }
+        return transfer;
+    }
+
+    public String getUsernameByAccountFrom(int id){
+        String username;
+        String sql = "SELECT u.username " +
+                "FROM users u" +
+                "JOIN accounts a ON a.user_id = u.user_id " +
+                "JOIN transfer t ON t.account_from = a.account_id " +
+                "WHERE account_from = ?;";
+        username = jdbcTemplate.queryForObject(sql,String.class,id);
+        return username;
+    }
+
+    public String getUsernameByAccountTo(int id){
+        String username;
+        String sql = "SELECT u.username " +
+                "FROM users u" +
+                "JOIN accounts a ON a.user_id = u.user_id " +
+                "JOIN transfer t ON t.account_to = a.account_id " +
+                "WHERE account_to = ?;";
+        username = jdbcTemplate.queryForObject(sql,String.class,id);
+        return username;
     }
 
     public List<Transfer> getTransfers(int accountId) {

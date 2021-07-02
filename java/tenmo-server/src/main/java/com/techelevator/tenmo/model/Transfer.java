@@ -10,15 +10,9 @@ public class Transfer {
     private int account_to;
     private int account_from;
     private BigDecimal amount;
-
-    public int getUser_Id() {
-        return user_Id;
-    }
-
-    public void setUser_Id(int user_Id) {
-        this.user_Id = user_Id;
-    }
-
+    private int account_id;
+    private BigDecimal balance;
+    private String username;
     private int user_Id;
 
     /*private String transferType; //have these ready for transfer process
@@ -41,6 +35,39 @@ public class Transfer {
         this.account_to = account_to;
         this.amount = amount;
     }
+
+
+    public int getUser_Id() {
+        return user_Id;
+    }
+
+    public void setUser_Id(int user_Id) {
+        this.user_Id = user_Id;
+    }
+    public int getAccount_id() {
+        return account_id;
+    }
+
+    public void setAccount_id(int account_id) {
+        this.account_id = account_id;
+    }
+
+    public BigDecimal getBalance() {
+        return balance;
+    }
+
+    public void setBalance(BigDecimal balance) {
+        this.balance = balance;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
 
     public int getTransfer_id() {
         return transfer_id;

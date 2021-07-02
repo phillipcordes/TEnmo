@@ -51,15 +51,40 @@ public class TransferService {
         int amount = Integer.parseInt(scanner.nextLine());
         BigDecimal amountSent = BigDecimal.valueOf(amount);
         Transfer transfer = makeTransfer(userID, amountSent);
-        Transfer returnTransfer = restTemplate.exchange(API_BASE_URL + "accounts/transfer/sendmoney", HttpMethod.POST, makeAuthEntity(token, transfer), Transfer.class).getBody();
+        Transfer returnTransfer = restTemplate.exchange(API_BASE_URL + "transfers/sendmoney", HttpMethod.POST, makeAuthEntity(token, transfer), Transfer.class).getBody();
+    }
 
-
+    public void getTransferByTransferId(String token){
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("*****************************************************************************************");
+        System.out.println("Please enter the transfer ID of the pending transaction you wish to view details of: " );
+        System.out.println("*****************************************************************************************");
+        int transferId = Integer.parseInt(scanner.nextLine());
+        Transfer transfer = restTemplate.exchange(API_BASE_URL + "transfers/"+transferId, HttpMethod.GET, makeAuthEntity(token), Transfer.class).getBody();
+        System.out.println("********************************");
+        assert transfer != null;
+        System.out.println("Transfer_ID: " + transfer.getTransfer_id());
+        System.out.println("Transfer_Type_ID: " + transfer.getTransfer_type_id());
+        System.out.println("Transfer_Status_ID: " + transfer.getTransfer_status_id());
+        System.out.println("Account_From: "+ transfer.getAccount_from());
+        System.out.println("Account_To: "+transfer.getAccount_to());
+        System.out.println("Amount: "+transfer.getAmount());
+        System.out.println("********************************");
     }
 
     public void listTransfers(String token){
-        List<Transfer> transferList = new ArrayList<>();
+        Transfer[] transferList;
         try {
-            transferList = restTemplate.exchange(API_BASE_URL + "/accounts/listtransfers", HttpMethod.GET, makeAuthEntity(token), List.class).getBody();
+            transferList = restTemplate.exchange(API_BASE_URL + "transfers/listtransfers", HttpMethod.GET, makeAuthEntity(token), Transfer[].class).getBody();
+            for(Transfer transfer : transferList){
+                System.out.println("********************************");
+                System.out.println("Transfer_ID: " + transfer.getTransfer_id());
+                System.out.println("Transfer_Type_ID: " + transfer.getTransfer_type_id());
+                System.out.println("Transfer_Status_ID: " + transfer.getTransfer_status_id());
+                System.out.println("Account_From: "+ transfer.getAccount_from());
+                System.out.println("Account_To: "+transfer.getAccount_to());
+                System.out.println("Amount: "+transfer.getAmount());
+            }
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
