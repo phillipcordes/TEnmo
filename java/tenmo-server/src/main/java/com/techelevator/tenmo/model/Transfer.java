@@ -15,9 +15,6 @@ public class Transfer {
     private String username;
     private int user_Id;
 
-    /*private String transferType; //have these ready for transfer process
-    private String transferStatus;
-*/
     public Transfer(){}
 
     public Transfer(int transfer_id, int transfer_type_id, int transfer_status_id, int account_to, int account_from, BigDecimal amount) {
@@ -117,24 +114,4 @@ public class Transfer {
         this.amount = amount;
     }
 
-
-
-
-//have these ready for use for process
-    /*
-
-    public String getTransferType() {
-        return transferType;
-    }
-    public void setTransferType(String transferType) {
-        this.transferType = transferType;
-    }
-    public String getTransferStatus() {
-        return transferStatus;
-    }
-    public void setTransferStatus(String transferStatus) {
-        this.transferStatus = transferStatus;
-    }
-
-*/
 }

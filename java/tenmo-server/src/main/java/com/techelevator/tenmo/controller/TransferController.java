@@ -29,7 +29,7 @@ public class TransferController {
         this.userDao = userDao;
     }
 
-    //send transfer request
+    //send transfer
     @RequestMapping(path = "/transfers/sendmoney", method = RequestMethod.POST)
     public Transfer sendTransfer(@RequestBody Transfer transfer, Principal principal) throws Exception {
         String loggedInUserName = principal.getName();
@@ -45,7 +45,7 @@ public class TransferController {
         return transferDao.getTransferByTransferId(id);
     }
 
-    @RequestMapping(path = "/transfers/listtransfers", method = RequestMethod.GET)
+    @RequestMapping(path = "/accounts/transfers/listtransfers", method = RequestMethod.GET)
     public List<Transfer> listTransfers(Principal principal){
         String loggedInUserName = principal.getName();
         int loggedInUserId = userDao.findIdByUsername(loggedInUserName);
@@ -54,38 +54,22 @@ public class TransferController {
         return transfers;
 
     }
-/*
-    //request transfer request with POST
-    @RequestMapping(path="request", method = RequestMethod.POST)
-    public String requestTransferRequest(@RequestBody Transfers transfer){
-        String results = transfersDAO.requestTransfer(transfer.getAccountFrom(), transfer.getAccountTo(), transfer.getAmount());
-        return results;
 
-//List all Transfers
-    @RequestMapping(value = "request/{id}", method = RequestMethod.GET)
-    public List<Transfers> getAllTransfersDAO
+    @RequestMapping(path="/accounts/transfers/listpending", method =  RequestMethod.GET)
+    public List<Transfer> listPending(Principal principal){
+        String loggedInUserName = principal.getName();
+        int loggedInUserId = userDao.findIdByUsername(loggedInUserName);
+        int accountId = transferDao.findAccountIdByUserId(loggedInUserId);
+        List<Transfer> transfers = transferDao.getPending(accountId);
+        return transfers;
+    }
 
-
-    //GET all transfers
-    @RequestMapping(path ="account/transfers/{id}", method = RequestMethod.GET)
-    public List<Transfers> getAllMyTransfers (@PathVariable int id) {
-        List<Transfers> output = transfersDAO.getAllTansfers(id);
-           return output;
-
-
-    //GET selected transfers
-    @RequestMapping(path = "transfers/{id}", method = RequestMethod.GET)
-        public Transfers getSelectedTransfer(@PathVariable int id)
-        Transfers transfers = transfersDAO.getTransferById(id);
-            return transfer;
-
-
-    //update request with PUT
-    @RequestMapping(path = "transfer/status/(statusId)", method = RequestMethod.PUR)
-        public String updateRequest(@RequestBody Transfers transfers, @PathVariable int statusId) {
-            String output = transfersDAO.updateTransferRequest(transfer, statusId);
-            return output;
-
-
- */
+   @RequestMapping(path = "/transfers/requestmoney", method = RequestMethod.POST)
+    public Transfer requestTransfer(@RequestBody Transfer transfer, Principal principal) throws Exception {
+        String loggedInUserName = principal.getName();
+        int loggedInUserId = userDao.findIdByUsername(loggedInUserName);
+        int accountId = transferDao.findAccountIdByUserId(loggedInUserId);
+        int accountIdTo = transferDao.findAccountIdByUserId(transfer.getUser_Id());
+       return transferDao.createRequest(transfer, accountId, accountIdTo);
+    }
 }

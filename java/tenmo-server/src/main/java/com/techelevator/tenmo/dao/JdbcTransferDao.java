@@ -19,21 +19,6 @@ public class JdbcTransferDao implements TransferDao {
     public JdbcTransferDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
-/*
-    public Transfer getTransferByTransferId(int transferId) {
-
-        Transfer transfer = null;
-
-        String sql = "SELECT transfer_id, transfer_type_id, transfer_status_id, account_from, account_to, amount " +
-                "FROM transfers " +
-                "WHERE transfer_id = ?;";
-        SqlRowSet results = jdbcTemplate.queryForRowSet(sql, transferId);
-        while (results.next()) {
-            transfer = mapRowToTransfer(results);
-        }
-        return transfer;
-
-    }*/
 
     public int findAccountIdByUserId(int userId) {
         String sql = "SELECT account_id FROM accounts WHERE user_id = ?;";
@@ -48,12 +33,6 @@ public class JdbcTransferDao implements TransferDao {
                 newTransfer.getAmount());
         return getTransferByTransferId(newId);
     }
-
-    //Get All Transfers
-    //Send Transfer
-    //Request Transfer
-    //Get Pending Request
-    //Update Transfer Request
 
     public BigDecimal updateBalanceWhenUserSendsMoney(int accountTo, int accountFrom, BigDecimal amount) throws Exception {
         String sqlAmountCheck = "SELECT balance FROM accounts WHERE account_id = ?; ";
@@ -106,7 +85,7 @@ public class JdbcTransferDao implements TransferDao {
         List<Transfer> transfers = new ArrayList<>();
         String sql = "SELECT transfer_id,transfer_type_id,transfer_status_id,account_from,account_to,amount " +
                 "FROM transfers t " +
-                "JOIN accounts a ON a.account_id = t.account_from " +
+                "JOIN accounts a ON a.account_id = transfers.account_from " +
                 "WHERE a.account_id = ?;";
         SqlRowSet results = jdbcTemplate.queryForRowSet(sql, accountId);
         while (results.next()) {
@@ -114,8 +93,57 @@ public class JdbcTransferDao implements TransferDao {
         }
         return transfers;
     }
+    public List<Transfer> getPending(int accountId) {
+        List<Transfer> transfers = new ArrayList<>();
+        String sql = "SELECT *  " +
+                "FROM transfers " +
+                "JOIN transfer_types ON transfer_types.transfer_type_id = transfers.transfer_type_id  " +
+                "JOIN accounts a ON a.account_id = transfers.account_from " +
+                "WHERE transfers.transfer_status_id = 1 AND a.account_id = ?;";
+        SqlRowSet results = jdbcTemplate.queryForRowSet(sql, accountId);
+        while (results.next()) {
+            transfers.add(mapRowToTransfer(results));
+        }
+        return transfers;
+    }
 
-    private Transfer mapRowToTransfer(SqlRowSet rowSet) {
+    public Transfer createRequest(Transfer newTransfer, int id, int account_Id_to) {
+        String sql = "INSERT INTO transfers (transfer_type_id, transfer_status_id, account_from, account_to, amount) " +
+                "VALUES (1, 1,?,?,?) " +
+                "RETURNING transfer_id;";
+        int newId = jdbcTemplate.queryForObject(sql, Integer.class, id, account_Id_to,
+                newTransfer.getAmount());
+        return getRequest(newId);
+    }
+
+    public Transfer getRequest(int id){
+        Transfer transfer = new Transfer();
+        String sql = "SELECT transfer_id,transfer_type_id,transfer_status_id,account_from,account_to,amount " +
+                "FROM transfers " +
+                "WHERE transfer_id = ?;";
+        SqlRowSet results = jdbcTemplate.queryForRowSet(sql,id);
+        if(results.next()){
+            transfer = mapRowToTransfer(results);
+        }
+        return transfer;
+    }
+
+
+    public BigDecimal updateBalanceWhenUserApprovesRequest(int accountTo, int accountFrom, BigDecimal amount) throws Exception {
+        String sqlAmountCheck = "SELECT balance FROM accounts WHERE account_id = ?; ";
+        BigDecimal currentBalance = jdbcTemplate.queryForObject(sqlAmountCheck, BigDecimal.class, accountFrom);
+        assert currentBalance != null;
+        if (currentBalance.compareTo(amount) < 0) {
+            throw new Exception();
+        } else {
+            String sql = "UPDATE accounts SET balance = balance + ? WHERE account_id = ?; " +
+                    "UPDATE accounts SET balance = balance - ? WHERE account_id = ?; ";
+            jdbcTemplate.update(sql, amount, accountTo, amount, accountFrom);
+            return jdbcTemplate.queryForObject(sqlAmountCheck, BigDecimal.class, accountFrom);
+        }
+     }
+
+   private Transfer mapRowToTransfer(SqlRowSet rowSet) {
         Transfer transfer = new Transfer();
         transfer.setTransfer_id(rowSet.getInt("transfer_id"));
         transfer.setTransfer_type_id(rowSet.getInt("transfer_type_id"));
@@ -125,6 +153,6 @@ public class JdbcTransferDao implements TransferDao {
         transfer.setAmount(rowSet.getBigDecimal("amount"));
         return transfer;
     }
-//add try/catch block to mapRow when transferring amounts?
+
 }
 

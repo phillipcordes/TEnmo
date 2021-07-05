@@ -16,13 +16,13 @@ public interface TransferDao {
     List<Transfer> getTransfers(int accountId);
 
     Transfer getTransferByTransferId(int id);
+
+    Transfer createRequest(Transfer newTransfer, int id, int account_Id_to);
+
+    Transfer getRequest(int id);
+
+    BigDecimal updateBalanceWhenUserApprovesRequest(int accountTo, int accountFrom, BigDecimal amount) throws Exception;
+
+    List<Transfer> getPending(int accountId);
 }
 
-/*
-public List<Transfers> getAllTransfers(int userId)
-public String sendTransfer(int userFrom, int userTo, BigDecimal amount);
-public String requestTransfer(int userFrom, int userTo, BigDecimal amount);
-public List<Transfers> getPendingRequests(int userId);
-public String updateTransferRequest(Transfers transfer, int statusId);
-
- */

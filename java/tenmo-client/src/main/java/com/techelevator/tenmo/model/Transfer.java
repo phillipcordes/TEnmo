@@ -9,6 +9,7 @@ public class Transfer {
     private int transfer_status_id;
     private int account_to;
     private int account_from;
+    private char username;
     private BigDecimal amount;
 
     public int getUser_Id() {

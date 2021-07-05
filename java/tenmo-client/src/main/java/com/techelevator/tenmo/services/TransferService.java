@@ -54,11 +54,21 @@ public class TransferService {
         Transfer returnTransfer = restTemplate.exchange(API_BASE_URL + "transfers/sendmoney", HttpMethod.POST, makeAuthEntity(token, transfer), Transfer.class).getBody();
     }
 
+    public void requestMoney(String token) {
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("*************************************************************************");
+        System.out.println("Please enter the userID of the person you wish to request TE Bucks from: "); //enter in userId
+        int userID = Integer.parseInt(scanner.nextLine());
+        System.out.println("*************************************************************************");
+        System.out.println("Please enter the amount of TE Bucks you wish to request: ");
+        int amount = Integer.parseInt(scanner.nextLine());
+        BigDecimal amountSent = BigDecimal.valueOf(amount);
+        Transfer transfer = makeRequest(userID, amountSent);
+        Transfer returnTransfer = restTemplate.exchange(API_BASE_URL + "transfers/requestmoney", HttpMethod.POST, makeAuthEntity(token, transfer), Transfer.class).getBody();
+    }
+
     public void getTransferByTransferId(String token){
         Scanner scanner = new Scanner(System.in);
-        System.out.println("*****************************************************************************************");
-        System.out.println("Please enter the transfer ID of the pending transaction you wish to view details of: " );
-        System.out.println("*****************************************************************************************");
         int transferId = Integer.parseInt(scanner.nextLine());
         Transfer transfer = restTemplate.exchange(API_BASE_URL + "transfers/"+transferId, HttpMethod.GET, makeAuthEntity(token), Transfer.class).getBody();
         System.out.println("********************************");
@@ -72,10 +82,29 @@ public class TransferService {
         System.out.println("********************************");
     }
 
+
     public void listTransfers(String token){
         Transfer[] transferList;
         try {
             transferList = restTemplate.exchange(API_BASE_URL + "transfers/listtransfers", HttpMethod.GET, makeAuthEntity(token), Transfer[].class).getBody();
+            for(Transfer transfer : transferList){
+                System.out.println("********************************");
+                System.out.println("Transfer_ID: " + transfer.getTransfer_id());
+                System.out.println("Transfer_Type_ID: " + transfer.getTransfer_type_id());
+                System.out.println("Transfer_Status_ID: " + transfer.getTransfer_status_id());
+                System.out.println("Account_From: "+ transfer.getAccount_from());
+                System.out.println("Account_To: "+transfer.getAccount_to());
+                System.out.println("Amount: "+transfer.getAmount());
+            }
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    public void listPendingRequests(String token){
+        Transfer[] transferList;
+        try {
+            transferList = restTemplate.exchange(API_BASE_URL + "/accounts/transfers/listpending", HttpMethod.GET, makeAuthEntity(token), Transfer[].class).getBody();
             for(Transfer transfer : transferList){
                 System.out.println("********************************");
                 System.out.println("Transfer_ID: " + transfer.getTransfer_id());
@@ -101,6 +130,15 @@ public class TransferService {
         Transfer transfer = new Transfer();
         transfer.setTransfer_type_id(2);
         transfer.setTransfer_status_id(2);
+        transfer.setUser_Id(userId);
+        transfer.setAmount(amount);
+        return transfer;
+    }
+
+    private Transfer makeRequest (int userId, BigDecimal amount) {
+        Transfer transfer = new Transfer();
+        transfer.setTransfer_type_id(1);
+        transfer.setTransfer_status_id(1);
         transfer.setUser_Id(userId);
         transfer.setAmount(amount);
         return transfer;
