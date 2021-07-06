@@ -63,7 +63,7 @@ public class TransferController {
         return transfers;
     }
 
-   @RequestMapping(path = "/accounts/transfers/requestmoney", method = RequestMethod.POST)
+   @RequestMapping(path = "/transfers/requestmoney", method = RequestMethod.POST)
     public Transfer requestTransfer(@RequestBody Transfer transfer, Principal principal) throws Exception {
         String loggedInUserName = principal.getName();
         int loggedInUserId = userDao.findIdByUsername(loggedInUserName);
@@ -72,7 +72,7 @@ public class TransferController {
        return transferDao.createRequest(transfer, accountId, accountIdTo);
     }
 
-    @RequestMapping(path = "/accounts/transfers/accepttransfer", method = RequestMethod.POST)
+    @RequestMapping(path = "/transfers/accepttransfer", method = RequestMethod.PUT)
     public Transfer acceptUpdate(@RequestBody Transfer transfer, Principal principal) throws Exception {
         String loggedInUserName = principal.getName();
         int loggedInUserId = userDao.findIdByUsername(loggedInUserName);

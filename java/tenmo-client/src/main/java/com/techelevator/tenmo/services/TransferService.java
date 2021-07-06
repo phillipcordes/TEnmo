@@ -52,7 +52,7 @@ public class TransferService {
         int amount = Integer.parseInt(scanner.nextLine());
         BigDecimal amountSent = BigDecimal.valueOf(amount);
         Transfer transfer = makeTransfer(userID, amountSent);
-        Transfer returnTransfer = restTemplate.exchange(API_BASE_URL + "/accounts/transfers/sendmoney", HttpMethod.POST, makeAuthEntity(token, transfer), Transfer.class).getBody();
+        Transfer returnTransfer = restTemplate.exchange(API_BASE_URL + "/transfers/sendmoney", HttpMethod.POST, makeAuthEntity(token, transfer), Transfer.class).getBody();
     }
 
     public void requestMoney(String token) {
@@ -65,7 +65,7 @@ public class TransferService {
         int amount = Integer.parseInt(scanner.nextLine());
         BigDecimal amountSent = BigDecimal.valueOf(amount);
         Transfer transfer = makeRequest(userID, amountSent);
-        Transfer returnTransfer = restTemplate.exchange(API_BASE_URL + "/accounts/transfers/requestmoney", HttpMethod.POST, makeAuthEntity(token, transfer), Transfer.class).getBody();
+        Transfer returnTransfer = restTemplate.exchange(API_BASE_URL + "/transfers/requestmoney", HttpMethod.POST, makeAuthEntity(token, transfer), Transfer.class).getBody();
     }
 
     public void getTransferByTransferId(String token) {
@@ -136,9 +136,9 @@ public class TransferService {
         while (true) {
             int choice = Integer.parseInt(scanner.nextLine());
             if (choice == 1) {
-                Transfer returnTransfer = restTemplate.exchange(API_BASE_URL + "/accounts/transfers/accepttransfer", HttpMethod.POST, makeAuthEntity(token), Transfer.class).getBody();
+                Transfer returnTransfer = restTemplate.exchange(API_BASE_URL + "transfers/accepttransfer", HttpMethod.PUT, makeAuthEntity(token), Transfer.class).getBody();
             } else if (choice == 2) {
-                Transfer returnTransfer = restTemplate.exchange(API_BASE_URL + "/accounts/transfers/denytransfer", HttpMethod.DELETE, makeAuthEntity(token), Transfer.class).getBody();
+                Transfer rejectTransfer = restTemplate.exchange(API_BASE_URL + "/transfers/denytransfer", HttpMethod.DELETE, makeAuthEntity(token), Transfer.class).getBody();
             } else {
 
             }
