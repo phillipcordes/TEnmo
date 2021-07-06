@@ -99,12 +99,18 @@ public class App {
         // TODO Auto-generated method stub
         //Request to view pending requests
         //show log of pending requests
+        Scanner scanner = new Scanner(System.in);
         String token = currentUser.getToken();
         System.out.println("******************************");
         System.out.println("List of pending transactions");
         System.out.println("******************************");
         transferService.listPendingRequests(token);
-
+        System.out.println("******************************");
+        System.out.println("Please enter transfer ID to approve/reject (0 to cancel): ");
+        int transferId= Integer.parseInt(scanner.nextLine());
+        // Ask for user to input request ID
+        // Once given, send to editRequest() function
+        transferService.editRequest(token);
     }
 
     private void sendBucks() {

@@ -12,6 +12,7 @@ public class Transfer {
     private char username;
     private BigDecimal amount;
 
+
     public int getUser_Id() {
         return user_Id;
     }

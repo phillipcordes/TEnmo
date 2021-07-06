@@ -24,5 +24,8 @@ public interface TransferDao {
     BigDecimal updateBalanceWhenUserApprovesRequest(int accountTo, int accountFrom, BigDecimal amount) throws Exception;
 
     List<Transfer> getPending(int accountId);
+
+    Transfer deleteRequest(int id);
+
 }
 

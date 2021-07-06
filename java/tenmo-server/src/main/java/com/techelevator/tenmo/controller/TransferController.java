@@ -54,7 +54,6 @@ public class TransferController {
         return transfers;
 
     }
-
     @RequestMapping(path="/accounts/transfers/listpending", method =  RequestMethod.GET)
     public List<Transfer> listPending(Principal principal){
         String loggedInUserName = principal.getName();
@@ -64,7 +63,7 @@ public class TransferController {
         return transfers;
     }
 
-   @RequestMapping(path = "/transfers/requestmoney", method = RequestMethod.POST)
+   @RequestMapping(path = "/accounts/transfers/requestmoney", method = RequestMethod.POST)
     public Transfer requestTransfer(@RequestBody Transfer transfer, Principal principal) throws Exception {
         String loggedInUserName = principal.getName();
         int loggedInUserId = userDao.findIdByUsername(loggedInUserName);
@@ -72,4 +71,20 @@ public class TransferController {
         int accountIdTo = transferDao.findAccountIdByUserId(transfer.getUser_Id());
        return transferDao.createRequest(transfer, accountId, accountIdTo);
     }
+
+    @RequestMapping(path = "/accounts/transfers/accepttransfer", method = RequestMethod.POST)
+    public Transfer acceptUpdate(@RequestBody Transfer transfer, Principal principal) throws Exception {
+        String loggedInUserName = principal.getName();
+        int loggedInUserId = userDao.findIdByUsername(loggedInUserName);
+        int accountId = transferDao.findAccountIdByUserId(loggedInUserId);
+        int accountIdTo = transferDao.findAccountIdByUserId(transfer.getUser_Id());
+        transferDao.updateBalanceWhenUserApprovesRequest(accountIdTo, accountId, transfer.getAmount());
+        return transferDao.createTransfer(transfer, accountId, accountIdTo);
+    }
+
+    @RequestMapping(path = "/accounts/transfers/denytransfer", method = RequestMethod.DELETE)
+    public Transfer deleteUpdate(@PathVariable int id) {
+      return  transferDao.deleteRequest(id);
+    }
+
 }
